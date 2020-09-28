@@ -7,8 +7,8 @@ function City(props) {
     <div >
     <ul>
       <li>State: {props.state}</li>
-      <li>Location: {props.location}</li>
       <li>Population: {props.city}</li>
+      <li>Logintue and Latitude: {props.location}</li>
     </ul>
   </div>
   );
@@ -19,7 +19,6 @@ function ZipSearchField(props) {
   <div>
     Enter a Zip code:
     <input type="text" onChange={ props.onChange } />
-    <p>You entered: </p>
   </div>);
 }
 
@@ -30,13 +29,18 @@ function ZipSearchField(props) {
 class App extends Component {
 
   state = {
-    userInputValue: "",
     cities: [],
   }
 
   handleZipChange(event) {
+    
     let url = 'http://ctp-zip-api.herokuapp.com/zip/' + event.target.value;
     console.log(event.target.value);
+    if (event.target.value.length !== 5) {
+      this.setState ({
+        cities: [],
+      })
+    } else {
     fetch(url)
       .then(response => response.json())
       .then(json => {
@@ -45,23 +49,25 @@ class App extends Component {
         })
       })
   }
+}
 
-
-  // create an array of <City /> elements,
 
   render() {
     const data = this.state.cities;
     const dataArray = [];
+    
     for(let i = 0; i < data.length; i++) {
       const curr = data[i];
       dataArray.push(
         <City
+        key={i}
         city={curr['City']}
         state={curr["State"]}
         location={curr['Lat'] + ", " + curr['Long']}
         />
       )
     }
+
     return (
       <div className="App">
         <div className="App-header">
@@ -69,7 +75,7 @@ class App extends Component {
         </div>
         <ZipSearchField onChange={(e) => this.handleZipChange(e)}/>
         <div>
-          {dataArray}
+        {(dataArray.length === 0) ? "Please enter a valid Zip Code" : dataArray }
         </div>
       </div>
     );
