@@ -5,20 +5,18 @@ import './App.css';
 function InputZip(props) {
   return (
     <div>
-      <input className="input-box" type="text" onChange={ props.zip }></input>
+      <input type="text" onChange={ props.zip }></input>
     </div>
   )
 }
 
 function City(props) {
   return (
-    <div className="city-box-centered">
-      <h3> { props.name }</h3>
+    <div>
       <ul>
-        <li>State: { props.state }</li>
-        <li>Location: { props.location } </li>
+        <li>Name: { props.city }</li>
         <li>Population: { props.population }</li>
-        <li>Total Wages: { props.totalwages }</li>
+        <li>Location: { props.location } </li>
       </ul>
     </div>
   )
@@ -58,16 +56,14 @@ class App extends Component {
     for (let i = 0; i < cityArray.length; i++) {
       cityDisplay.push(
         <City 
-        name={ cityArray[i]['City'] + ", " + cityArray[i]['State'] }
-        state={ cityArray[i]['State'] }
-        population={ cityArray[i]['EstimatedPopulation'] }
-        location={ cityArray[i]['Lat'] + ", " + cityArray[i]['Long'] }
-        totalwages= {cityArray[i]['TotalWages'] }
+        city={ cityArray[i]['City']}
+        population={ cityArray[i]['EstimatedPopulation']}
+        location={ cityArray[i]['Lat'] + ", " + cityArray[i]['Long']}
         />
       )
     }
     return (
-      <div className="col-centered">
+      <div>
         <InputZip zip={(e) => this.handleChange(e)} />
         <p> { cityDisplay.length === 0 ? "Please enter a zip code" : cityDisplay }</p>
       </div>
