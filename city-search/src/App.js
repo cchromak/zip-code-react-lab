@@ -40,9 +40,11 @@ class App extends Component {
     const url = 'http://ctp-zip-api.herokuapp.com/city/' + city.toUpperCase();
     let urlZip = 'http://ctp-zip-api.herokuapp.com/zip/';
     let holdArr = [];
+    let promiseOne;
+    let promiseTwo;
     fetch(url)
       .then(response => response.json())
-      .then(json => {
+      .then(promiseOne = new Promise(json => {
               this.setState({
                 cityZipCodes: json,
               })    
@@ -50,14 +52,30 @@ class App extends Component {
                 let currUrl = urlZip + this.state.cityZipCodes[i];
                 fetch(currUrl)
                   .then(res => res.json())
-                  .then(data => {
+                  .then(promiseTwo = new Promise(data => {
                     for(let j = 0; j < data.length; j++){
                       holdArr.push(data[i]);
                     }
-                  })
+                  }))
               }
-      })
+              // for (let i = 0; i < this.state.cityZipCodes.length; i++){
+              //   let currUrl = urlZip + this.state.cityZipCodes[i];
+              //   fetch(currUrl)
+              //     .then(res => res.json())
+              //     .then(data => {
+              //       for(let j = 0; j < data.length; j++){
+              //         holdArr.push(data[i]);
+              //       }
+              //     })
+              // }
+      }))
       .catch(errors => console.log("human error!", errors));
+      
+
+      Promise.all([promiseOne, promiseTwo]).then((values) => {
+        console.log(values[0]);
+      });
+
     console.log(holdArr);
     
   }
