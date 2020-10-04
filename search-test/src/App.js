@@ -26,7 +26,7 @@ class App extends Component {
   handleCityName(event) {
     let currName = event.target.value.toUpperCase();
     let cityUrl= "http://ctp-zip-api.herokuapp.com/city/" + currName;
-    let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/";
+    // let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/";
     let promiseZips = fetch(cityUrl)
       .then(response => response.json())
       .then(json => {
@@ -46,17 +46,18 @@ class App extends Component {
         .then(response => response.json())
         .then(json => {
           this.setState({
-            cityArray: this.state.cityArray.push(json),
+            cityArray: json,
           })
         })
       console.log(zipUrl);
     }
 
-  //   Promise.all([promiseZips]).then(values =>
-  //     console.log(values))
-  //     fetch(zipUrl + values)
-  //     .then(response => response.json())
-  //     .then(data => console.log(data)));
+    // Promise.all([promiseZips]).then(values => {
+    //   console.log(values)
+    //   fetch(zipUrl + values)
+    //   .then(response => response.json())
+    //   .then(data => console.log(data))
+    // });
    }
 
   render() {
