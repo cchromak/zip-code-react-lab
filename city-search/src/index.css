@@ -16,3 +16,21 @@ code {
   float: none;
   margin: 0 auto;
 }
+
+.col-centered{
+  padding-top: 5%;
+  margin: auto;
+  width: 25%;
+
+}
+
+.city-box-centered{
+  padding-top: 5%;
+  margin: auto;
+}
+
+/* .city-name-title{
+  background-color: rgb(175, 175, 175);
+  border: black 20px;
+} */
+

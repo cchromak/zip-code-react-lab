@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
 
+
+
 function InputCity(props) {
   return(
     <div>
-      Enter a city name<input onChange= { props.onChange }></input>
+      Enter a city name  <input onChange= { props.onChange }></input>
     </div>
   )
 }
@@ -12,18 +14,24 @@ function InputCity(props) {
 function City(props) {
   return (
     <div className="city-box-centered">
-      <h3> { props.name }</h3>
-      <ul>
-        <li>State: { props.state }</li>
-        <li>Location: { props.location } </li>
-        <li>Population: { props.population }</li>
-        <li>Total Wages: { props.totalwages }</li>
-      </ul>
+      <table className="table">
+        <thead className="thead-dark">
+          <h3 className="city-name-title"> { props.name }</h3>
+        </thead>
+        <tbody>
+          <tr>
+          <ul>
+            <li>State: { props.state }</li>
+            <li>Location: { props.location } </li>
+            <li>Population: { props.population }</li>
+            <li>Total Wages: { props.totalwages }</li>
+          </ul>
+          </tr>
+        </tbody>
+      </table>
     </div>
   )
 }
-
-
 
 
 class App extends Component {
@@ -66,12 +74,18 @@ class App extends Component {
               cityArray: holdArray,
            })
           })
+          .catch(
+            this.setState({
+              cityArray: [],
+            })
+          )
         }
     })
    }
 
   render() {
     let cityDisplay =[];
+    if(this.state.cityArray.length > 0) {
     for (let i = 0; i < this.state.cityArray.length; i++) {
       let cityHold = this.state.cityArray;
       cityDisplay.push(
@@ -84,8 +98,11 @@ class App extends Component {
         />
       )
     }
+  } else {
+    cityDisplay = [];
+  }
     return (
-      <div>
+      <div className="col-centered">
         <InputCity onChange={ (e) => this.handleCityName(e) } />
         <p> { cityDisplay } </p>
       </div>
