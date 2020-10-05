@@ -26,31 +26,51 @@ class App extends Component {
   handleCityName(event) {
     let currName = event.target.value.toUpperCase();
     let cityUrl= "http://ctp-zip-api.herokuapp.com/city/" + currName;
-    // let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/";
-    let promiseZips = fetch(cityUrl)
+    
+    
+    const promiseZips = fetch(cityUrl)
       .then(response => response.json())
       .then(json => {
         this.setState({
           zipsArray: json,
         })
+        return this.state.zipsArray;
       })
     .catch(this.setState({
       zipsArray: [],
     }));
-    
-    
-    let allZipCodes = this.state.zipsArray;
-    for (let i = 0; i < allZipCodes.length; i++) {
-      let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + allZipCodes[i];
-      fetch(zipUrl)
-        .then(response => response.json())
-        .then(json => {
-          this.setState({
-            cityArray: json,
+
+    const promiseTwo = promiseZips.then(value => {
+        for(let i = 0; i < value.length; i++) {
+          let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + value[i];
+          fetch(zipUrl)
+          .then(response => response.json())
+          .then(json => {
+            let holdArray = this.state.cityArray.concat(json);
+            this.setState({
+              cityArray: holdArray,
+           })
           })
-        })
-      console.log(zipUrl);
-    }
+        }
+    })
+    
+    promiseTwo.then(console.log(this.state.cityArray))
+   
+    
+    // let allZipCodes = this.state.zipsArray;
+    // console.log(allZipCodes);
+    // for (let i = 0; i < allZipCodes.length; i++) {
+    //   let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + allZipCodes[i];
+    //   fetch(zipUrl)
+    //     .then(response => response.json())
+    //     .then(json => {
+    //       let holdArray = this.state.cityArray.concat(json);
+    //       this.setState({
+    //         cityArray: holdArray,
+    //       })
+    //     })
+    //   console.log(zipUrl);
+    // }
 
     // Promise.all([promiseZips]).then(values => {
     //   console.log(values)
@@ -64,11 +84,11 @@ class App extends Component {
     return (
       <div>
         <InputCity onChange={ (e) => this.handleCityName(e) } />
-        <p> { this.state.cityArray } </p>
+    
       </div>
     )
   }
 }
-
+  //  <p> { this.state.cityArray } </p>
 
 export default App;
