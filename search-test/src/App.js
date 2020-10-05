@@ -9,6 +9,19 @@ function InputCity(props) {
   )
 }
 
+function City(props) {
+  return (
+    <div className="city-box-centered">
+      <h3> { props.name }</h3>
+      <ul>
+        <li>State: { props.state }</li>
+        <li>Location: { props.location } </li>
+        <li>Population: { props.population }</li>
+        <li>Total Wages: { props.totalwages }</li>
+      </ul>
+    </div>
+  )
+}
 
 
 
@@ -24,6 +37,7 @@ class App extends Component {
   };
 
   handleCityName(event) {
+
     let currName = event.target.value.toUpperCase();
     let cityUrl= "http://ctp-zip-api.herokuapp.com/city/" + currName;
     
@@ -40,7 +54,8 @@ class App extends Component {
       zipsArray: [],
     }));
 
-    const promiseTwo = promiseZips.then(value => {
+  
+    promiseZips.then(value => {
         for(let i = 0; i < value.length; i++) {
           let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + value[i];
           fetch(zipUrl)
@@ -53,42 +68,30 @@ class App extends Component {
           })
         }
     })
-    
-    promiseTwo.then(console.log(this.state.cityArray))
-   
-    
-    // let allZipCodes = this.state.zipsArray;
-    // console.log(allZipCodes);
-    // for (let i = 0; i < allZipCodes.length; i++) {
-    //   let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + allZipCodes[i];
-    //   fetch(zipUrl)
-    //     .then(response => response.json())
-    //     .then(json => {
-    //       let holdArray = this.state.cityArray.concat(json);
-    //       this.setState({
-    //         cityArray: holdArray,
-    //       })
-    //     })
-    //   console.log(zipUrl);
-    // }
-
-    // Promise.all([promiseZips]).then(values => {
-    //   console.log(values)
-    //   fetch(zipUrl + values)
-    //   .then(response => response.json())
-    //   .then(data => console.log(data))
-    // });
    }
 
   render() {
+    let cityDisplay =[];
+    for (let i = 0; i < this.state.cityArray.length; i++) {
+      let cityHold = this.state.cityArray;
+      cityDisplay.push(
+        <City
+        name={ cityHold[i]['City'] + ", " + cityHold[i]['State'] }
+        state={ cityHold[i]['State'] }
+        population={ cityHold[i]['EstimatedPopulation'] }
+        location={ cityHold[i]['Lat'] + ", " + cityHold[i]['Long'] }
+        totalwages= {cityHold[i]['TotalWages'] }
+        />
+      )
+    }
     return (
       <div>
         <InputCity onChange={ (e) => this.handleCityName(e) } />
-    
+        <p> { cityDisplay } </p>
       </div>
     )
   }
 }
-  //  <p> { this.state.cityArray } </p>
+
 
 export default App;

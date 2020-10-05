@@ -1,109 +1,97 @@
 import React, { Component } from 'react';
 import './App.css';
 
-
 function InputCity(props) {
-    return (
-      <div>
-        <input type="type" onChange={ props.onChange }></input>
-      </div>
-    )
+  return(
+    <div>
+      Enter a city name<input onChange= { props.onChange }></input>
+    </div>
+  )
 }
 
-function City (props) {
-    return (
-      <div>
-        <h1> {props.state} </h1>
-        <ul>
-          <li> {props.city} </li>
-          <li> {props.population} </li>
-        </ul>
-      </div>
-    )
+function City(props) {
+  return (
+    <div className="city-box-centered">
+      <h3> { props.name }</h3>
+      <ul>
+        <li>State: { props.state }</li>
+        <li>Location: { props.location } </li>
+        <li>Population: { props.population }</li>
+        <li>Total Wages: { props.totalwages }</li>
+      </ul>
+    </div>
+  )
 }
+
+
+
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       cityName: "",
-      cityZipCodes: [],
-      cityData: [],
+      zipsArray: [],
+      cityArray: [],
     }
-  
-    this.handleChange = this.handleChange.bind(this);
-  
-  }
+  };
 
-  handleChange(event) {
-    const city = event.target.value;
-    const url = 'http://ctp-zip-api.herokuapp.com/city/' + city.toUpperCase();
-    let urlZip = 'http://ctp-zip-api.herokuapp.com/zip/';
-    let holdArr = [];
-    let promiseOne;
-    let promiseTwo;
-    fetch(url)
-      .then(response => response.json())
-      .then(promiseOne = new Promise(json => {
-              this.setState({
-                cityZipCodes: json,
-              })    
-              for (let i = 0; i < this.state.cityZipCodes.length; i++){
-                let currUrl = urlZip + this.state.cityZipCodes[i];
-                fetch(currUrl)
-                  .then(res => res.json())
-                  .then(promiseTwo = new Promise(data => {
-                    for(let j = 0; j < data.length; j++){
-                      holdArr.push(data[i]);
-                    }
-                  }))
-              }
-              // for (let i = 0; i < this.state.cityZipCodes.length; i++){
-              //   let currUrl = urlZip + this.state.cityZipCodes[i];
-              //   fetch(currUrl)
-              //     .then(res => res.json())
-              //     .then(data => {
-              //       for(let j = 0; j < data.length; j++){
-              //         holdArr.push(data[i]);
-              //       }
-              //     })
-              // }
-      }))
-      .catch(errors => console.log("human error!", errors));
-      
+  handleCityName(event) {
 
-      Promise.all([promiseOne, promiseTwo]).then((values) => {
-        console.log(values[0]);
-      });
-
-    console.log(holdArr);
+    let currName = event.target.value.toUpperCase();
+    let cityUrl= "http://ctp-zip-api.herokuapp.com/city/" + currName;
     
-  }
+    
+    const promiseZips = fetch(cityUrl)
+      .then(response => response.json())
+      .then(json => {
+        this.setState({
+          zipsArray: json,
+        })
+        return this.state.zipsArray;
+      })
+    .catch(this.setState({
+      zipsArray: [],
+    }));
+
   
-  
-  
-  render () {
-    const cityArray = [];
-    for (let i = 0; i < this.state.cityData.length; i++) {
-      let curr = this.state.cityData[i];
-      cityArray.push(
-        <City 
-          city={curr['City']}
-          state={ curr['State']}
-          population= { curr['Population']}
+    promiseZips.then(value => {
+        for(let i = 0; i < value.length; i++) {
+          let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + value[i];
+          fetch(zipUrl)
+          .then(response => response.json())
+          .then(json => {
+            let holdArray = this.state.cityArray.concat(json);
+            this.setState({
+              cityArray: holdArray,
+           })
+          })
+        }
+    })
+   }
+
+  render() {
+    let cityDisplay =[];
+    for (let i = 0; i < this.state.cityArray.length; i++) {
+      let cityHold = this.state.cityArray;
+      cityDisplay.push(
+        <City
+        name={ cityHold[i]['City'] + ", " + cityHold[i]['State'] }
+        state={ cityHold[i]['State'] }
+        population={ cityHold[i]['EstimatedPopulation'] }
+        location={ cityHold[i]['Lat'] + ", " + cityHold[i]['Long'] }
+        totalwages= {cityHold[i]['TotalWages'] }
         />
       )
     }
     return (
       <div>
-        <InputCity onChange={ (e) => this.handleChange(e) } />
-        <p> { cityArray }</p>
-
+        <InputCity onChange={ (e) => this.handleCityName(e) } />
+        <p> { cityDisplay } </p>
       </div>
-    );
+    )
   }
-    
- 
 }
+
 
 export default App;
