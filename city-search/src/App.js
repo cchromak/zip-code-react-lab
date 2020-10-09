@@ -58,12 +58,33 @@ class App extends Component {
         })
         return this.state.zipsArray;
       })
-    .catch(this.setState({
+    .catch(() => {
+      this.setState({
       zipsArray: [],
-    }));
+      })
+      return [];
+    });
 
   
     promiseZips.then(value => {
+
+      if(value.length === 0) { return; }
+
+      let zipPromises = [];
+      for(let i=0; i < value.length; i++) {
+        zipPromises.push(
+          fetch("http://ctp-zip-api.herokuapp.com/zip/" + value[i])
+            .then(res => res.json())
+        )
+      }
+
+      Promise
+        .all(zipPromises)
+        .then(arrayOfFetchResults => {
+          console.log(arrayOfFetchResults.flat())
+        })
+        
+
         for(let i = 0; i < value.length; i++) {
           let zipUrl = "http://ctp-zip-api.herokuapp.com/zip/" + value[i];
           fetch(zipUrl)
